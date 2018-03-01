@@ -12,3 +12,31 @@ By considering the terms in the Fibonacci sequence whose values do not exceed fo
 * We can keep track of a sum variable as well as two last numbers in the sequence.  Due to he nature of the sequence we cannot
 * take advantage of any paralelization. 
 */ 
+
+function*recursive_generator({firstNum= 0, secondNum= 1, fn= null} = {}){
+	let nums = [firstNum, secondNum]; 
+	yield (nums[0]);
+	yield nums[1];
+	while(true){
+		let temp = nums[0];
+		nums[0] = nums[1];
+		nums[1] = fn(nums[0], temp);
+		yield nums[1];
+	}
+}
+
+const fibonatchi = (val1 = 0 , val2= 1) => val1+val2; 
+
+function main(maxNum = 4000000){
+	let sum = 0, current = 0 ; 
+	const fibo_generator = recursive_generator({fn:fibonatchi});
+	do{
+		if((current & 1) === 0)
+			sum += current; 
+		current = fibo_generator.next().value; 
+	} while (current <= maxNum);
+	console.log(sum);
+	return sum; 
+}
+
+main();
